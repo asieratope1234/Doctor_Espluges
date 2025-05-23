@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Calendario Eventos</title>
+
+    <!-- Bootstrap 5 CSS (CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- FullCalendar CSS (CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38e54d 100%);
+            --danger-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --dark-gradient: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow: 0 20px 40px rgba(0,0,0,0.1);
+            --shadow-hover: 0 25px 50px rgba(0,0,0,0.15);
+            --border-radius: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+
+        /* Fondo animado */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+            z-index: -1;
+            animation: backgroundMove 15s ease-in-out infinite;
+        }
+
+        @keyframes backgroundMove {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Navbar mejorada */
+        .navbar {
+            background: var(--glass-bg) !important;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+            padding: 1.2rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.6rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-brand i {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.4rem;
+        }
+
+        /* Botones modernos */
+        .btn-modern {
+            border-radius: 25px;
+            padding: 0.6rem 1.5rem;
+            font-weight: 500;
+            border: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+            text-decoration: none;
+        }
+
+        .btn-modern:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary-modern {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-success-modern {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .btn-danger-modern {
+            background: var(--danger-gradient);
+            color: white;
+        }
+
+        .btn-secondary-modern {
+            background: var(--secondary-gradient);
+            color: white;
+        }
+
+        .btn-dark-modern {
+            background: var(--dark-gradient);
+            color: white;
+        }
+
+        /* Container del calendario */
+        .calendar-wrapper {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .calendar-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 2.5rem;
+            border: 1px solid var(--glass-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calendar-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        #calendar {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+        }
+
+        /* FullCalendar personalizado */
+        .fc {
+            --fc-border-color: rgba(0,0,0,0.1);
+            --fc-button-text-color: white;
+            --fc-button-bg-color: transparent;
+            --fc-button-border-color: transparent;
+            --fc-button-hover-bg-color: rgba(255,255,255,0.1);
+            --fc-button-active-bg-color: rgba(255,255,255,0.2);
+            --fc-today-bg-color: rgba(102, 126, 234, 0.1);
+        }
+
+        .fc-toolbar-title {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+
+        .fc-button-group .fc-button {
+            background: var(--primary-gradient) !important;
+            border: none !important;
+            border-radius: 12px !important;
+            margin: 0 2px !important;
+            transition: all 0.3s ease !important;
+            font-weight: 500 !important;
+            padding: 0.5rem 1rem !important;
+        }
+
+        .fc-button-group .fc-button:hover {
+            transform: translateY(-1px) !important;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2) !important;
+        }
+
+        .fc-daygrid-day:hover {
+            background-color: rgba(102, 126, 234, 0.05);
+            transition: background-color 0.3s ease;
+        }
+
+        .fc-daygrid-day.fc-day-today {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)) !important;
+        }
+
+        .fc-event {
+            border-radius: 8px !important;
+            border: none !important;
+            padding: 2px 6px !important;
+            font-weight: 500 !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .fc-event:hover {
+            transform: scale(1.02) !important;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2) !important;
+        }
+
+        /* Modales mejorados */
+        .modal-content {
+            border-radius: var(--border-radius);
+            border: none;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(20px);
+            background: var(--glass-bg);
+        }
+
+        .modal-header {
+            background: var(--primary-gradient);
+            color: white;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            border-bottom: none;
+            padding: 1.5rem 2rem;
+        }
+
+        .modal-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .btn-close {
+            filter: invert(1);
+            opacity: 0.8;
+        }
+
+        .btn-close:hover {
+            opacity: 1;
+        }
+
+        /* Formularios mejorados */
+        .form-control, .form-select {
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+            padding: 0.75rem 1rem;
+            background: rgba(255,255,255,0.9);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            background: white;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-check-input:checked {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+
+        .form-check-label {
+            margin-left: 0.5rem;
+        }
+
+        /* Lista de eventos para eliminar */
+        .event-item {
+            background: rgba(255,255,255,0.7);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .event-item:hover {
+            background: rgba(255,255,255,0.9);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Efectos de animación */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .calendar-container {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .navbar-brand {
+                font-size: 1.3rem;
+            }
+
+            .btn-modern {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+                margin: 0.2rem;
+            }
+
+            .calendar-container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+
+            .fc-toolbar-title {
+                font-size: 1.4rem;
+            }
+
+            .modal-body {
+                padding: 1.5rem;
+            }
+
+            .btn-group-mobile {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                justify-content: center;
+            }
+        }
+
+        /* Scrollbar personalizado */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-gradient);
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="#">
+        <i class="fas fa-calendar-alt"></i>
+        Mi Calendario
+    </a>
+    <div class="ms-auto btn-group-mobile">
+        <button class="btn btn-modern btn-primary-modern" data-bs-toggle="modal" data-bs-target="#añadirEventoModal">
+            <i class="fas fa-plus"></i> Añadir evento
+        </button>
+        <button class="btn btn-modern btn-danger-modern" id="btnEliminarEventos">
+            <i class="fas fa-trash"></i> Eliminar eventos
+        </button>
+        <a href="/chat" class="btn btn-modern btn-success-modern">
+            <i class="fas fa-comments"></i> Chat General
+        </a>
+        <a href="{{ url_for('gestion_grupos') }}" class="btn btn-modern btn-secondary-modern">
+            <i class="fas fa-users"></i> Crear Grupos
+        </a>
+        <a href="{{ url_for('logout') }}" class="btn btn-modern btn-dark-modern">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+</nav>
+
+<div class="calendar-wrapper">
+    <div class="calendar-container">
+        <div id="calendar"></div>
+    </div>
+</div>
+
+<!-- Modal Añadir Evento -->
+<div class="modal fade" id="añadirEventoModal" tabindex="-1" aria-labelledby="añadirEventoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form id="formAñadirEvento" method="POST" action="/añadir_evento">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="añadirEventoModalLabel">
+            <i class="fas fa-calendar-plus"></i>
+            Añadir nuevo evento
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+            <div class="mb-3">
+                <label for="titulo" class="form-label">
+                    <i class="fas fa-tag"></i>
+                    Título
+                </label>
+                <input type="text" class="form-control" id="titulo" name="titulo" placeholder="Ej: Reunión de trabajo" required />
+            </div>
+            <div class="mb-3">
+                <label for="fecha" class="form-label">
+                    <i class="fas fa-clock"></i>
+                    Fecha y hora
+                </label>
+                <input type="datetime-local" class="form-control" id="fecha" name="fecha" required />
+            </div>
+            <div class="mb-3">
+                <label for="color" class="form-label">
+                    <i class="fas fa-palette"></i>
+                    Color
+                </label>
+                <input type="color" class="form-control form-control-color" id="color" name="color" value="#667eea" title="Elige un color" required />
+            </div>
+            <div class="mb-3">
+                <label for="descripcion" class="form-label">
+                    <i class="fas fa-align-left"></i>
+                    Descripción (opcional)
+                </label>
+                <textarea class="form-control" id="descripcion" name="descripcion" rows="3" placeholder="Añade una descripción del evento..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-modern btn-primary-modern">
+            <i class="fas fa-save"></i> Crear Evento
+          </button>
+          <button type="button" class="btn btn-modern btn-secondary-modern" data-bs-dismiss="modal">
+            <i class="fas fa-times"></i> Cancelar
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Eliminar Eventos -->
+<div class="modal fade" id="eliminarEventosModal" tabindex="-1" aria-labelledby="eliminarEventosModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="eliminarEventosModalLabel">
+          <i class="fas fa-trash-alt"></i>
+          Selecciona eventos para eliminar
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formEliminarEventos">
+          <div id="listaEventosEliminar" style="max-height: 400px; overflow-y: auto;">
+            <!-- Eventos se cargan aquí -->
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-modern btn-danger-modern" id="confirmarEliminar">
+          <i class="fas fa-trash"></i> Eliminar seleccionados
+        </button>
+        <button type="button" class="btn btn-modern btn-secondary-modern" data-bs-dismiss="modal">
+          <i class="fas fa-times"></i> Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap 5 JS Bundle (incluye Popper) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const calendarEl = document.getElementById('calendar');
+
+    // Inicializa FullCalendar
+    window.calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'es',
+        timeZone: 'local',
+        height: 'auto',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: '/eventos',
+
+        // Aquí añadimos la función para mostrar usuario
+        eventContent: function(arg) {
+            const color = arg.event.backgroundColor || arg.event.color || '#667eea';
+            const usuario = arg.event.extendedProps.usuario || 'Desconocido';
+            return {
+                html: `
+                    <div style="
+                        background: ${color};
+                        padding: 4px 8px;
+                        border-radius: 8px;
+                        color: white;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        max-width: 100%;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                    ">
+                        <b style="font-size: 0.85rem;">${arg.event.title}</b><br/>
+                        <small style="
+                            color: rgba(255,255,255,0.9);
+                            display: block;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            font-size: 0.7rem;
+                        ">
+                            <i class="fas fa-user" style="font-size: 0.6rem; margin-right: 2px;"></i>
+                            ${usuario}
+                        </small>
+                    </div>
+                `
+            };
+        },
+
+        eventClick: function(info) {
+            const descripcion = info.event.extendedProps.descripcion || 'Sin descripción';
+            const usuario = info.event.extendedProps.usuario || 'Desconocido';
+            const fecha = info.event.start.toLocaleString('es-ES', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            alert(`📅 ${info.event.title}\n\n📍 ${fecha}\n👤 Creado por: ${usuario}\n📝 ${descripcion}`);
+        }
+    });
+
+    calendar.render();
+
+    // Botón para abrir modal eliminar eventos
+    document.getElementById('btnEliminarEventos').addEventListener('click', function() {
+        fetch('/eventos')
+        .then(response => response.json())
+        .then(eventos => {
+            const lista = document.getElementById('listaEventosEliminar');
+            lista.innerHTML = '';
+            if(eventos.length === 0) {
+                lista.innerHTML = '<div class="text-center text-muted"><i class="fas fa-calendar-times fa-3x mb-3"></i><p>No hay eventos para eliminar.</p></div>';
+                return;
+            }
+            eventos.forEach(evento => {
+                const div = document.createElement('div');
+                div.classList.add('form-check', 'event-item');
+                const fecha = new Date(evento.start).toLocaleString('es-ES', {
+                    weekday: 'short',
+                    day: 'numeric',
+                    month: 'short',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                div.innerHTML = `
+                    <input class="form-check-input" type="checkbox" value="${evento.id}" id="evento_${evento.id}">
+                    <label class="form-check-label" for="evento_${evento.id}">
+                        <strong style="color: #2c3e50;">${evento.title}</strong>
+                        <br>
+                        <small class="text-muted">
+                            <i class="fas fa-clock"></i> ${fecha}
+                            ${evento.extendedProps && evento.extendedProps.usuario ?
+                              `<br><i class="fas fa-user"></i> ${evento.extendedProps.usuario}` : ''}
+                        </small>
+                    </label>
+                `;
+                lista.appendChild(div);
+            });
+            const eliminarModal = new bootstrap.Modal(document.getElementById('eliminarEventosModal'));
+            eliminarModal.show();
+        });
+    });
+
+    // Botón confirmar eliminar seleccionados
+    document.getElementById('confirmarEliminar').addEventListener('click', function() {
+        const checkboxes = document.querySelectorAll('#listaEventosEliminar input[type=checkbox]:checked');
+        if (checkboxes.length === 0) {
+            alert('⚠️ Selecciona al menos un evento para eliminar.');
+            return;
+        }
+
+        if (!confirm(`¿Estás seguro de que quieres eliminar ${checkboxes.length} evento(s)?`)) {
+            return;
+        }
+
+        Promise.all(Array.from(checkboxes).map(checkbox => {
+            return fetch('/eliminar_evento', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'id=' + encodeURIComponent(checkbox.value),
+            }).then(res => res.json());
+        })).then(results => {
+            alert('✅ Eventos eliminados correctamente.');
+            calendar.refetchEvents();
+            const eliminarModalEl = document.getElementById('eliminarEventosModal');
+            const eliminarModal = bootstrap.Modal.getInstance(eliminarModalEl);
+            eliminarModal.hide();
+        }).catch(() => {
+            alert('❌ Error eliminando eventos.');
+        });
+    });
+});
+</script>
+
+</body>
+</html>

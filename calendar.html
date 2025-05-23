@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Calendario</title>
+  <style>
+    body { font-family: sans-serif; }
+    .event { padding: 5px; margin: 5px; border-radius: 4px; color: white; }
+  </style>
+</head>
+<body>
+  <h1>Bienvenido, {{ user }}</h1>
+  <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+  <h2>Añadir Evento</h2>
+  <form method="POST" action="{{ url_for('add_event') }}">
+    <input name="title" placeholder="Título" required>
+    <input name="date" type="date" required>
+    <input name="color" type="color" required>
+    <button type="submit">Añadir</button>
+  </form>
+  <h2>Eventos</h2>
+  {% for event in events %}
+    <div class="event" style="background-color: {{ event.color }}">
+      {{ event.date }} - <strong>{{ event.title }}</strong> ({{ event.user }})
+    </div>
+  {% endfor %}
+</body>
+</html>

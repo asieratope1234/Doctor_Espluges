@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Calendario - Escuela Doctor Esplugues</title>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #f0f0f0;
+    }
+    #calendar {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>Calendario de Eventos - Escuela Doctor Esplugues</h1>
+  <div id="calendar"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var calendarEl = document.getElementById('calendar');
+
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'es',
+        height: 'auto',
+        events: '/eventos',  // Endpoint para cargar eventos desde Flask
+        eventDisplay: 'block', // Los eventos se muestran como bloques con color
+        eventColor: '#378006',
+        dayMaxEventRows: true,  // Si hay muchos eventos muestra "+X más"
+      });
+
+      calendar.render();
+    });
+  </script>
+</body>
+</html>

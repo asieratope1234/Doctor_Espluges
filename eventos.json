@@ -1,0 +1,112 @@
+[
+    {
+        "id": "4e08617b-6aad-4af5-b140-cdac9177e35e",
+        "title": "hola",
+        "start": "2025-05-23T13:51",
+        "color": "#667eea",
+        "extendedProps": {
+            "descripcion": "h",
+            "usuario": "1"
+        }
+    },
+    {
+        "id": "890e0d28-6ca6-42ce-8d27-5229a7d7a8ba",
+        "title": "asd",
+        "start": "2025-05-24T12:12",
+        "color": "#667eea",
+        "extendedProps": {
+            "descripcion": "d",
+            "usuario": "1"
+        }
+    },
+    {
+        "id": "4a27fd63-c7fb-442d-8ae8-0b27ac7e17da",
+        "title": "cafe",
+        "start": "2025-05-23T15:50",
+        "color": "#667eea",
+        "extendedProps": {
+            "descripcion": "ads",
+            "usuario": "asier"
+        }
+    },
+    {
+        "id": "c496f2d6-f1d8-4fbb-b179-371aaceebdb6",
+        "title": "hola",
+        "start": "2025-05-23T12:01",
+        "color": "#3788d8",
+        "extendedProps": {
+            "descripcion": null,
+            "usuario": "1"
+        }
+    },
+    {
+        "id": "03c8e96a-cb0d-4266-aec9-5aa8fd9585b4",
+        "title": "234",
+        "start": "2025-05-23T22:22",
+        "color": "#3788d8",
+        "extendedProps": {
+            "descripcion": null,
+            "usuario": "1"
+        }
+    },
+    {
+        "id": "c60572db-259a-48c0-8151-c26b9ed56a94",
+        "title": "54",
+        "start": "2025-05-29T22:22",
+        "color": "#26a269",
+        "extendedProps": {
+            "descripcion": null,
+            "usuario": "1"
+        }
+    },
+    {
+        "id": "247f5c88-ca39-49c4-a006-288e9e29a9a2",
+        "title": "20",
+        "start": "2025-05-23T22:22",
+        "color": "#3788d8",
+        "extendedProps": {
+            "descripcion": null,
+            "usuario": "1"
+        }
+    },
+    {
+        "id": "ba50bed8-ff35-452f-bb56-bbb8ba9d1b3f",
+        "title": "f",
+        "start": "2025-05-23T22:22",
+        "color": "#667eea",
+        "extendedProps": {
+            "descripcion": "hola\r\n",
+            "usuario": "1"
+        }
+    },
+    {
+        "id": "ff30f157-7aad-47ea-9665-1492104825b5",
+        "title": "rgert",
+        "start": "2025-05-25T22:22",
+        "color": "#3788d8",
+        "extendedProps": {
+            "descripcion": null,
+            "usuario": "1"
+        }
+    },
+    {
+        "id": "ee45ff59-22eb-47c5-8654-4b255478a91d",
+        "title": "cafe",
+        "start": "2025-05-24T15:46",
+        "color": "#667eea",
+        "extendedProps": {
+            "descripcion": "hola",
+            "usuario": "1"
+        }
+    },
+    {
+        "id": "2de76eec-37e9-4cb8-b24b-8f6ca32824a3",
+        "title": "asdas",
+        "start": "2025-05-24T14:51",
+        "color": "#667eea",
+        "extendedProps": {
+            "descripcion": "asd",
+            "usuario": "1"
+        }
+    }
+]

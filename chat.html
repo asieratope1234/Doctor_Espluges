@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Chat - Vamos a Reflexionar</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background-color: #4a90e2;
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header button {
+            background: #ffffff33;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+        header button:hover {
+            background: #ffffff66;
+        }
+
+        #chat-container {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #messages {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
+        }
+
+        .message {
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 15px;
+            max-width: 75%;
+            word-wrap: break-word;
+            box-shadow: 0 1px 2px rgb(0 0 0 / 0.1);
+        }
+
+        .message.usuario {
+            background-color: #d1e7dd;
+            align-self: flex-end;
+        }
+
+        .message.otros {
+            background-color: #e2e3e5;
+            align-self: flex-start;
+        }
+
+        .meta {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 2px;
+            text-align: right;
+        }
+
+        #input-area {
+            margin-top: 15px;
+            display: flex;
+        }
+
+        #input-area input[type="text"] {
+            flex: 1;
+            padding: 10px 15px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 20px 0 0 20px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        #input-area input[type="text"]:focus {
+            border-color: #4a90e2;
+        }
+
+        #input-area button {
+            padding: 10px 20px;
+            background-color: #4a90e2;
+            border: none;
+            border-radius: 0 20px 20px 0;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #input-area button:hover {
+            background-color: #357ABD;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        Chat - Usuario: <span id="username">{{ session['usuario'] }}</span>
+        <button id="volverBtn">Volver al Calendario</button>
+    </header>
+
+    <div id="chat-container">
+        <div id="messages"></div>
+        <form id="input-area" onsubmit="return enviarMensaje(event)">
+            <input type="text" id="mensaje" autocomplete="off" placeholder="Escribe tu mensaje..." />
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+
+    <script>
+        const messagesDiv = document.getElementById('messages');
+        const inputMensaje = document.getElementById('mensaje');
+        const volverBtn = document.getElementById('volverBtn');
+
+        volverBtn.onclick = () => {
+            window.location.href = '/'; // Ruta al calendario
+        };
+
+        function agregarMensaje(mensajeObj) {
+            const div = document.createElement('div');
+            div.classList.add('message');
+            div.classList.add(mensajeObj.usuario === '{{ session["usuario"] }}' ? 'usuario' : 'otros');
+
+            div.innerHTML = `
+                <strong>${mensajeObj.usuario}</strong>: ${mensajeObj.mensaje}
+                <div class="meta">${mensajeObj.hora}</div>
+            `;
+            messagesDiv.appendChild(div);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        async function cargarMensajes() {
+            try {
+                const res = await fetch('/chat/messages');
+                const mensajes = await res.json();
+                messagesDiv.innerHTML = '';
+                mensajes.forEach(agregarMensaje);
+            } catch (error) {
+                console.error('Error cargando mensajes:', error);
+            }
+        }
+
+        async function enviarMensaje(e) {
+            e.preventDefault();
+            const texto = inputMensaje.value.trim();
+            if (!texto) return;
+            try {
+                const res = await fetch('/chat/messages', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({mensaje: texto})
+                });
+                const data = await res.json();
+                if (data.success) {
+                    inputMensaje.value = '';
+                    await cargarMensajes();
+                } else if (data.error) {
+                    alert(data.error);
+                }
+            } catch (error) {
+                alert('Error enviando mensaje');
+                console.error(error);
+            }
+        }
+
+        // Cargar mensajes cada 2 segundos
+        cargarMensajes();
+        setInterval(cargarMensajes, 2000);
+    </script>
+</body>
+</html>

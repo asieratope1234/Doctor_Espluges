@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Grupos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #dfe9f3, #ffffff);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .crear-grupo {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid #e9ecef;
+        }
+
+        .crear-grupo h2 {
+            color: #3498db;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .miembros-container {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background: white;
+        }
+
+        .miembro-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .miembro-item:last-child {
+            border-bottom: none;
+        }
+
+        .miembro-item input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .miembro-item label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: normal;
+        }
+
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            margin-left: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .grupos-lista {
+            margin-top: 30px;
+        }
+
+        .grupos-lista h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .grupo-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        .grupo-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .grupo-imagen {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            float: right;
+            margin-left: 15px;
+            border: 3px solid #3498db;
+        }
+
+        .creador-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .btn-edit, .btn-delete {
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background 0.3s;
+            border: none;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .btn-edit:hover {
+            background: #0056b3;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        .grupo-nombre {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .grupo-miembros {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+
+        .grupo-acciones {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-chat {
+            background: #27ae60;
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .btn-chat:hover {
+            background: #219a52;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .volver {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .volver a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .volver a:hover {
+            text-decoration: underline;
+        }
+
+        .usuario-actual {
+            background: #d4edda;
+            color: #155724;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .seleccionar-todos {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+
+        .seleccionar-todos button {
+            background: none;
+            border: none;
+            color: #3498db;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gestión de Grupos</h1>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <div class="crear-grupo">
+            <h2>Crear Nuevo Grupo</h2>
+            <form method="POST">
+                <div class="form-group">
+                    <label for="nombre_grupo">Nombre del Grupo:</label>
+                    <input type="text" id="nombre_grupo" name="nombre_grupo" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Seleccionar Miembros:</label>
+                    <p style="font-size: 14px; color: #7f8c8d; margin-bottom: 10px;">
+                        Tú ({{ session.usuario }}) serás añadido automáticamente al grupo
+                    </p>
+
+                    {% if usuarios %}
+                        <div class="seleccionar-todos">
+                            <button type="button" onclick="toggleTodos()">Seleccionar/Deseleccionar Todos</button>
+                        </div>
+
+                        <div class="miembros-container">
+                            {% for usuario in usuarios %}
+                                <div class="miembro-item">
+                                    <input type="checkbox" id="miembro_{{ loop.index }}" name="miembros" value="{{ usuario }}">
+                                    <label for="miembro_{{ loop.index }}">{{ usuario }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p style="color: #7f8c8d; font-style: italic;">No hay otros usuarios disponibles para añadir al grupo.</p>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn">Crear Grupo</button>
+                <button type="reset" class="btn btn-secondary">Limpiar</button>
+            </form>
+        </div>
+
+        <div class="grupos-lista">
+            <h2>Mis Grupos</h2>
+
+            {% if grupos %}
+                {% for grupo in grupos %}
+                    {% if session.usuario in grupo.miembros %}
+                        <div class="grupo-card">
+                            {% if grupo.creador == session.usuario %}
+                                <div class="creador-badge">👑 Creador</div>
+                            {% endif %}
+
+                            {% if grupo.imagen %}
+                                <img src="{{ url_for('static', filename='uploads/' + grupo.imagen) }}"
+                                     alt="Imagen del grupo" class="grupo-imagen">
+                            {% endif %}
+
+                            <div class="grupo-nombre">{{ grupo.nombre }}</div>
+                            <div class="grupo-miembros">
+                                Miembros ({{ grupo.miembros|length }}):
+                                {% for miembro in grupo.miembros %}
+                                    {{ miembro }}{% if miembro == session.usuario %}<span class="usuario-actual">Tú</span>{% endif %}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% if grupo.fecha_creacion %}
+                                <div style="font-size: 12px; color: #999; margin-top: 5px;">
+                                    Creado: {{ grupo.fecha_creacion[:10] }}
+                                </div>
+                            {% endif %}
+                            <div class="grupo-acciones">
+                                <a href="{{ url_for('chat_grupo', nombre_grupo=grupo.nombre) }}" class="btn-chat">
+                                    💬 Entrar al Chat
+                                </a>
+                                {% if grupo.creador == session.usuario %}
+                                    <a href="{{ url_for('editar_grupo', nombre_grupo=grupo.nombre) }}" class="btn-edit">
+                                        ⚙️ Editar
+                                    </a>
+                                    <button onclick="eliminarGrupo('{{ grupo.nombre }}')" class="btn-delete">
+                                        🗑️ Eliminar
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <p style="color: #7f8c8d; font-style: italic; text-align: center;">
+                    No tienes grupos todavía. ¡Crea tu primer grupo arriba!
+                </p>
+            {% endif %}
+        </div>
+
+        <div class="volver">
+            <a href="{{ url_for('calendario') }}">← Volver al Calendario</a>
+        </div>
+    </div>
+
+    <script>
+        function toggleTodos() {
+            const checkboxes = document.querySelectorAll('input[name="miembros"]');
+            const algunoMarcado = Array.from(checkboxes).some(cb => cb.checked);
+
+            checkboxes.forEach(cb => {
+                cb.checked = !algunoMarcado;
+            });
+        }
+
+        function eliminarGrupo(nombreGrupo) {
+            if (confirm(`¿Estás seguro de que quieres eliminar el grupo "${nombreGrupo}"? Esta acción no se puede deshacer.`)) {
+                fetch(`/grupo/${encodeURIComponent(nombreGrupo)}/eliminar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Grupo eliminado correctamente');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    alert('Error al eliminar el grupo');
+                    console.error('Error:', error);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
